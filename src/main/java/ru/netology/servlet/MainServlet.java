@@ -1,5 +1,6 @@
 package ru.netology.servlet;
 
+import ru.netology.config.JavaConfig;
 import ru.netology.controller.PostController;
 import ru.netology.repository.PostRepository;
 import ru.netology.service.PostService;
@@ -17,7 +18,7 @@ public class MainServlet extends HttpServlet {
 //    final var service = new PostService(repository);
 //    controller = new PostController(service);
     // отдаём список пакетов, в которых нужно искать аннотированные классы
-    final var context = new AnnotationConfigApplicationContext("ru.netology");
+    final var context = new AnnotationConfigApplicationContext(JavaConfig.class);
 
     // получаем по имени бина
     controller = (PostController) context.getBean("postController");

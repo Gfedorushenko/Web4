@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
-@Repository
 public class PostRepository {
 
   private static final ConcurrentSkipListMap<Long, Post> requests = new ConcurrentSkipListMap<>();

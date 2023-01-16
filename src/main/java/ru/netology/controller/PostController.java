@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
 
-@Controller
 public class PostController {
     public static final String APPLICATION_JSON = "application/json";
     private final PostService service;
