@@ -6,26 +6,27 @@ import ru.netology.model.Post;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Repository
 public class PostRepository {
 
-  private static final ConcurrentSkipListMap<Long, Post> requests = new ConcurrentSkipListMap<>();
+  private final AtomicLong id=new AtomicLong(1);
+  private final ConcurrentHashMap<Long, Post> requests = new ConcurrentHashMap<>();
   public List<Post> all() {
-    List<Post> list = new ArrayList<>();
-    for(Post post : requests.values()){
-      list.add(post);
-    }
-    return list;
+    return new ArrayList<>(requests.values());
   }
 
   public Optional<Post> getById(long id) {return Optional.ofNullable(requests.get(id));}
 
   public Post save(Post post) {
-    long count=post.getId();
-    if(count==0)
-      count=requests.lastKey()+1;
-    post.setId(count);
-    requests.put(count, post);
+    long postId=post.getId();
+    if(postId==0) {
+      postId = id.getAndIncrement();
+      post.setId(postId);
+    }
+    requests.put(postId, post);
     return post;
   }
   public void removeById(long id) { requests.remove(id);  }

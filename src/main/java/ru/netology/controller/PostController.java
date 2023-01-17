@@ -3,6 +3,7 @@ package ru.netology.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 import ru.netology.service.PostService;
@@ -12,7 +13,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
-
+@Controller
+@RequestMapping("/api/posts")
 public class PostController {
     public static final String APPLICATION_JSON = "application/json";
     private final PostService service;
@@ -22,6 +24,7 @@ public class PostController {
         this.service = service;
     }
 
+    @GetMapping
     public void all(HttpServletResponse response) throws IOException {
         final var data = service.all();
         System.out.println(data);
@@ -30,8 +33,8 @@ public class PostController {
         response.setContentType(APPLICATION_JSON);
         response.getWriter().print(gson.toJson(data, listType));
     }
-
-    public void getById(long id, HttpServletResponse response) throws IOException {
+    @GetMapping("/{id}")
+    public void getById(@PathVariable long id, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
         final var data=service.getById(id);
         if(data.isEmpty()) {
@@ -42,7 +45,7 @@ public class PostController {
             response.getWriter().print(gson.toJson(data));
 
     }
-
+    @PostMapping
     public void save(Reader body, HttpServletResponse response) throws IOException {
         final var post = gson.fromJson(body, Post.class);
         final var data = service.save(post);
@@ -50,7 +53,8 @@ public class PostController {
         response.getWriter().print(gson.toJson(data));
     }
 
-    public void removeById(long id, HttpServletResponse response) throws IOException {
+    @DeleteMapping("/{id}")
+    public void removeById(@PathVariable long id, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
         response.getWriter().print("id: " + id + " removed");
     }
