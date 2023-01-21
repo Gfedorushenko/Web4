@@ -11,23 +11,42 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class PostRepository {
-
   private final AtomicLong id=new AtomicLong(1);
   private final ConcurrentHashMap<Long, Post> requests = new ConcurrentHashMap<>();
   public List<Post> all() {
-    return new ArrayList<>(requests.values());
+    List<Post> list = new ArrayList<>();
+    for (Post post : requests.values()) {
+      if (!post.isRemoved()) {
+        list.add(post);
+      }
+    }
+    return new ArrayList<>(list);
   }
-
-  public Optional<Post> getById(long id) {return Optional.ofNullable(requests.get(id));}
-
-  public Post save(Post post) {
+  public Optional<Post> getById(long id) {
+    if(requests.containsKey(id) && !requests.get(id).isRemoved())
+      return Optional.of(requests.get(id));
+    else
+      return Optional.empty();
+  }
+  public Optional<Post> save(Post post) {
     long postId=post.getId();
     if(postId==0) {
       postId = id.getAndIncrement();
       post.setId(postId);
     }
-    requests.put(postId, post);
-    return post;
+    if(requests.containsKey(postId)) {
+      if (!requests.get(postId).isRemoved())
+        return Optional.empty();
+      else {
+        requests.put(postId, post);
+        return Optional.of(post);
+      }
+    }else{
+      requests.put(postId, post);
+      return Optional.of(post);
+    }
   }
-  public void removeById(long id) { requests.remove(id);  }
+  public void removeById(long id) {
+    requests.put(id,requests.get(id).setRemoved(true));
+  }
 }

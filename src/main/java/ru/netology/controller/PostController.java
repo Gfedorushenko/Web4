@@ -42,19 +42,24 @@ public class PostController {
             response.getWriter().print("id: " + id + " not found");
         }
         else
-            response.getWriter().print(gson.toJson(data));
-
+            response.getWriter().print(gson.toJson(data.get()));
     }
     @PostMapping
     public void save(Reader body, HttpServletResponse response) throws IOException {
+        response.setContentType(APPLICATION_JSON);
         final var post = gson.fromJson(body, Post.class);
         final var data = service.save(post);
-        response.setContentType(APPLICATION_JSON);
-        response.getWriter().print(gson.toJson(data));
+        if(data.isEmpty()) {
+            response.setStatus(404);
+            response.getWriter().print("Post was removed");
+        }
+        else
+            response.getWriter().print(gson.toJson(data.get()));
     }
 
     @DeleteMapping("/{id}")
     public void removeById(@PathVariable long id, HttpServletResponse response) throws IOException {
+        service.removeById(id);
         response.setContentType(APPLICATION_JSON);
         response.getWriter().print("id: " + id + " removed");
     }
