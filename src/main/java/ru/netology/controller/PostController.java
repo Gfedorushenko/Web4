@@ -13,54 +13,32 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
-@Controller
+@RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    public static final String APPLICATION_JSON = "application/json";
     private final PostService service;
-    private static final Gson gson = new Gson();
 
     public PostController(PostService service) {
         this.service = service;
     }
 
     @GetMapping
-    public void all(HttpServletResponse response) throws IOException {
-        final var data = service.all();
-        System.out.println(data);
-        Type listType = new TypeToken<List<Post>>() {
-        }.getType();
-        response.setContentType(APPLICATION_JSON);
-        response.getWriter().print(gson.toJson(data, listType));
+    public List<Post> all() {
+        return service.all();
     }
+
     @GetMapping("/{id}")
-    public void getById(@PathVariable long id, HttpServletResponse response) throws IOException {
-        response.setContentType(APPLICATION_JSON);
-        final var data=service.getById(id);
-        if(data.isEmpty()) {
-            response.setStatus(404);
-            response.getWriter().print("id: " + id + " not found");
-        }
-        else
-            response.getWriter().print(gson.toJson(data.get()));
+    public Post getById(@PathVariable long id) {
+        return service.getById(id);
     }
+
     @PostMapping
-    public void save(Reader body, HttpServletResponse response) throws IOException {
-        response.setContentType(APPLICATION_JSON);
-        final var post = gson.fromJson(body, Post.class);
-        final var data = service.save(post);
-        if(data.isEmpty()) {
-            response.setStatus(404);
-            response.getWriter().print("Post was removed");
-        }
-        else
-            response.getWriter().print(gson.toJson(data.get()));
+    public Post save(@RequestBody Post post) {
+        return service.save(post);
     }
 
     @DeleteMapping("/{id}")
-    public void removeById(@PathVariable long id, HttpServletResponse response) throws IOException {
+    public void removeById(@PathVariable long id) {
         service.removeById(id);
-        response.setContentType(APPLICATION_JSON);
-        response.getWriter().print("id: " + id + " removed");
     }
 }

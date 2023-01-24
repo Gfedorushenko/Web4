@@ -17,9 +17,9 @@ public class PostService {
 
   public List<Post> all() {return repository.all();}
 
-  public Optional<Post> getById(long id) {return repository.getById(id);}
+  public Post getById(long id) {return repository.getById(id);}
 
-  public Optional<Post> save(Post post) {return repository.save(post);}
+  public Post save(Post post) {return repository.save(post);}
 
   public void removeById(long id) {
     repository.removeById(id);
